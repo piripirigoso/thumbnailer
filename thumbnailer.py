@@ -13,9 +13,15 @@ from os import walk, stat, chdir, system, environ
 from re import findall
 from os.path import join, isfile
 from subprocess import Popen
-from settings.base import *
+
+logging.config.dictConfig(yaml.load(open('logging.yaml')))
+
+app = flask.Flask(__name__)
+app.secret_key = 'thumbnailer'
+
 
 try:
+    from settings.base import *
     env = environ['env']
     if env == 'production':
         from settings.production import *
@@ -25,11 +31,6 @@ try:
         from settings.devel import *
 except:
     from settings.devel import *
-
-logging.config.dictConfig(yaml.load(open('logging.yaml')))
-
-app = flask.Flask(__name__)
-app.secret_key = 'thumbnailer'
 
 
 def putting_on_s3(filename):
