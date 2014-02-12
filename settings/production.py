@@ -1,0 +1,5 @@
+video_dir = '/storage/wmscontent/eventialsVOD/mp4/'
+thumb_dir = '/storage/thumbs/'
+aws_bucket_name = ''
+aws_access_key = ''
+aws_secret_key = ''

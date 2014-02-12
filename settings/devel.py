@@ -1,0 +1,5 @@
+video_dir = '/vagrant/test/'
+thumb_dir = '/home/vagrant/thumbs/'
+aws_bucket_name = ''
+aws_access_key = ''
+aws_secret_key = ''
