@@ -51,8 +51,8 @@ def generate_thumb(file, sizes):
             thumb_name = '%s_%s.png' % (file, size)
 
             try:
-                proc = Popen(['/usr/bin/ffmpeg', '-i', file_path,
-                        '-ss', '00:01:25',
+                proc = Popen([FFMPEG_FILEPATH, '-i', file_path,
+                        '-ss', THUMB_TIME,
                         '-vcodec', 'png',
                         '-vframes', '1',
                         '-an',
