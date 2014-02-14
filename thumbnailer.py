@@ -30,7 +30,7 @@ def putting_on_s3(filename):
     
         from boto.s3.key import Key
         k = Key(bucket)
-        k.key = filename
+        k.key = AWS_MEDIA_PATH + filename
         k.set_contents_from_filename(filename)
         app.logger.info('File %s was uploaded successfully' % filename)
         return True
