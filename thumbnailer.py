@@ -30,7 +30,7 @@ def putting_on_s3(filename):
     
         from boto.s3.key import Key
         k = Key(bucket)
-        k.key = AWS_MEDIA_PATH + filename
+        k.key = AWS_MEDIA_PATH + AWS_THUMB_PATH + filename
         k.set_contents_from_filename(filename)
         app.logger.info('File %s was uploaded successfully' % filename)
         return True
@@ -78,7 +78,7 @@ def generate_thumb(file, sizes):
                 upload_status = putting_on_s3(thumb_name)
                 thumbs.append({"name": thumb_name, "size": size,
                                "thumb_ok": file_ok,  "upload_ok": upload_status,
-                               "file_path": AWS_MEDIA_PATH + thumb_name})
+                               "file_path": AWS_THUMB_PATH + thumb_name})
 
     else:
         thumbs.append(None)
