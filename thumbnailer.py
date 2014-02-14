@@ -77,7 +77,8 @@ def generate_thumb(file, sizes):
             if file_ok:
                 upload_status = putting_on_s3(thumb_name)
                 thumbs.append({"name": thumb_name, "size": size,
-                               "thumb_ok": file_ok,  "upload_ok": upload_status})
+                               "thumb_ok": file_ok,  "upload_ok": upload_status,
+                               "file_path": AWS_MEDIA_PATH + thumb_name})
 
     else:
         thumbs.append(None)
