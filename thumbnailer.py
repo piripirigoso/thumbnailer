@@ -10,7 +10,7 @@ import logging, logging.config
 import yaml
 import subprocess
 from os import walk, stat, chdir, system, environ
-from re import findall
+from re import search
 from os.path import join, isfile
 from subprocess import Popen
 from settings import *
@@ -34,9 +34,33 @@ def putting_on_s3(filename):
         k.set_contents_from_filename(filename)
         app.logger.info('File %s was uploaded successfully' % filename)
         return True
-    except:
-        app.logger.error('File %s was uploaded unsuccessfully' % filename)
+    except Exception, e:
+        app.logger.error('File %s was uploaded unsuccessfully: %s' % (filename, unicode(e)))
         return False
+
+
+def get_video_length(filename):
+    try:
+        app.logger.info('Get duration for %s:' % filename)
+        proc = subprocess.Popen([FFPROBE_FILEPATH, filename],
+               stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
+        line = [x for x in proc.stdout.readlines() if "Duration" in x]
+    except Exception, e:
+        app.logger.error('Unable to probe the %s: %s' % (filename, unicode(e)))
+        return 0
+
+    if len(line) > 0:
+        duration = search(r'[0-9]{2}:[0-9]{2}:[0-9]{2}', line[0])
+        if duration is not None:
+            times = duration.group(0).split(':')
+            hours = times[0]
+            mins = times[1]
+            secs = times[2]
+            return int((3600*hours) + (60*mins) + secs)
+        else:
+            return 0
+    else:
+        return 0
 
 
 def generate_thumb(file, sizes):
@@ -52,7 +76,7 @@ def generate_thumb(file, sizes):
 
             try:
                 proc = Popen([FFMPEG_FILEPATH, '-i', file_path,
-                        '-ss', THUMB_TIME,
+                        '-ss', str(get_video_length(file_path)/2),
                         '-vcodec', 'png',
                         '-vframes', '1',
                         '-an',
@@ -71,8 +95,8 @@ def generate_thumb(file, sizes):
                         break
                 app.logger.info("%s generated successfully" % thumb_name)
                 file_ok = True
-            except:
-                app.logger.error("%s generated unsuccessfully" % thumb_name)
+            except Exception, e:
+                app.logger.error("%s generated unsuccessfully: " % (thumb_name, unicode(e)))
 
             if file_ok:
                 upload_status = putting_on_s3(thumb_name)
@@ -101,7 +125,8 @@ def generate():
     try:
         thumbs = generate_thumb(filename, sizes)
         return flask.jsonify({'stream': filename, "thumbs": thumbs})
-    except:
+    except Exception, e:
+        app.logger.error('Unable to create thumbnail: %s' % unicode(e))
         return flask.Response(status=400)
 
 app.logger.info('application environment: %s' % ENV)
