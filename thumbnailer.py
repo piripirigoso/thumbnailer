@@ -9,7 +9,7 @@ import boto
 import logging, logging.config
 import yaml
 import subprocess
-from os import walk, stat, chdir, system, environ
+from os import walk, stat, chdir, system
 from re import search
 from os.path import join, isfile
 from subprocess import Popen
