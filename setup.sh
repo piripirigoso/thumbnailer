@@ -1,7 +1,7 @@
 #!/bin/bash
 sudo apt-get update
 sudo apt-get upgrade -y
-sudo apt-get install python-pip build-essential python-dev vim ffmpeg -y
+sudo apt-get install python-pip build-essential python-dev vim ffmpeg ffmpegthumbnailer -y
 
 sudo pip install virtualenvwrapper
 

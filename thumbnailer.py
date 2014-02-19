@@ -39,30 +39,6 @@ def putting_on_s3(filename):
         return False
 
 
-def get_video_length(filename):
-    try:
-        app.logger.info('Get duration for %s:' % filename)
-        proc = subprocess.Popen([FFPROBE_FILEPATH, filename],
-               stdout = subprocess.PIPE, stderr = subprocess.STDOUT)
-        line = [x for x in proc.stdout.readlines() if "Duration" in x]
-    except Exception, e:
-        app.logger.error('Unable to probe the %s: %s' % (filename, unicode(e)))
-        return 0
-
-    if len(line) > 0:
-        duration = search(r'[0-9]{2}:[0-9]{2}:[0-9]{2}', line[0])
-        if duration is not None:
-            times = duration.group(0).split(':')
-            hours = times[0]
-            mins = times[1]
-            secs = times[2]
-            return int((3600*hours) + (60*mins) + secs)
-        else:
-            return 0
-    else:
-        return 0
-
-
 def generate_thumb(file, sizes):
     thumbs = []
     filename = file + '.mp4'
@@ -76,14 +52,9 @@ def generate_thumb(file, sizes):
 
             try:
                 proc = Popen([FFMPEG_FILEPATH, '-i', file_path,
-                        '-ss', str(get_video_length(file_path)/2),
-                        '-vcodec', 'png',
-                        '-vframes', '1',
-                        '-an',
-                        '-f', 'rawvideo',
+                        '-o', thumb_name,
                         '-s', size,
-                        '-y', thumb_name,
-                        '-loglevel', 'quiet'],
+                        '-t', '50%'],
                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
                 # When in debug mode, we can see all raw information sent by ffmpeg command
