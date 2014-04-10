@@ -9,7 +9,8 @@ import boto
 import logging, logging.config
 import yaml
 import subprocess
-from os import walk, stat, chdir, system
+import errno
+from os import walk, stat, chdir, system, mkdir
 from re import search
 from os.path import join, isfile
 from subprocess import Popen
@@ -45,6 +46,12 @@ def generate_thumb(file, sizes):
     file_path = VIDEO_DIR + filename
     chdir(THUMB_DIR)
     if isfile(file_path):
+        if '/' in file:
+            try:
+                mkdir(file.replace(file.split('/')[-1], ''))
+            except OSError as exc:
+                if exc.errno == errno.EEXIST:
+                    pass
         for size in sizes:
             file_ok = False
             app.logger.info("Generating thumbnail for %s [%s]..." % (filename, size))
